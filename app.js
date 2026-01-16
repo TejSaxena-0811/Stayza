@@ -1,13 +1,18 @@
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
-const Listing = require("./models/listing.js");
 const path = require("path");
 const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
-const wrapAsync = require("./utils/wrapAsync.js");
 const ExpressError = require("./utils/ExpressError.js");
-const {listingSchema} = require("./schema.js");
+const session = require("express-session");
+const flash = require("connect-flash");
+
+
+
+const listings = require("./routes/listing.js");
+const reviews = require("./routes/review.js");
+
 
 
 
@@ -35,17 +40,19 @@ main()
 })
 
 
-// making the joi validations as a middleware function
-const validateListing = (req , res , next) => {
-    let {err} = listingSchema.validate(req.body);
-    if(error){
-        let errMsg = error.details.map((el) => el.message).join(",");
-        throw new ExpressError(400 , errMsg);
+
+
+const sessionOptions = {
+    secret: "mysecretcode",
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+        expires: Date.now() + (7 * 24 * 60 * 60 * 1000),
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+        httpOnly: true
     }
-    else{
-        next();
-    }
-}
+};
+
 
 
 
@@ -54,63 +61,24 @@ app.get("/" , (req , res) => {
 })
 
 
-// INDEX ROUTE
-app.get("/listings" , async (req , res) => {
-    const allListings = await Listing.find({});
-    res.render("listings/index.ejs" , {allListings});
+
+
+app.use(session(sessionOptions));
+app.use(flash());
+
+app.use((req , res , next) => {
+    res.locals.success = req.flash("success"); // using this success variable in flash.ejs
+    res.locals.error = req.flash("error");
+    next();
 })
 
 
-// CREATE ROUTE
-app.get("/listings/new" , (req , res) => {
-    res.render("listings/new.ejs");
-})
-
-app.post("/listings" , validateListing , wrapAsync(async (req , res) => {
-    const newListing = new Listing(req.body.listing);
-    await newListing.save();
-
-    res.redirect("/listings");
-}))
 
 
+app.use("/listings" , listings);
+app.use("/listings/:id/reviews" , reviews);
 
 
-// EDIT ROUTE
-app.get("/listings/:id/edit" , wrapAsync(async(req , res) => {
-    let {id} = req.params;
-    const listing = await Listing.findById(id);
-    res.render("listings/edit.ejs" , {listing});
-}))
-
-app.put("/listings/:id" , validateListing , wrapAsync(async(req , res) => {
-    let {id} = req.params;
-    await Listing.findByIdAndUpdate(
-        id,
-        {...req.body.listing},
-        { runValidators: true, new: true }
-    );
-    res.redirect(`/listings/${id}`);
-}))
-
-
-
-
-
-// DELETE ROUTE
-app.delete("/listings/:id" , wrapAsync(async(req , res) => {
-    let {id} = req.params;
-    await Listing.findByIdAndDelete({_id: `${id}`});
-    res.redirect("/listings");
-}))
-
-
-// SHOW ROUTE
-app.get("/listings/:id" , wrapAsync(async(req , res) => {
-    let {id} = req.params;
-    const listing = await Listing.findById(id);
-    res.render("listings/show.ejs" , {listing});
-}))
 
 
 
