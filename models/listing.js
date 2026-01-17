@@ -25,12 +25,17 @@ const listingSchema = new Schema({
         type: String
     },
     
-    reviews: [
+    reviews: [ // this is an array because there can be multiple reviews on a listing.
         {
             type: Schema.Types.ObjectId,
             ref: "Review"
         }
-    ]
+    ],
+
+    owner: {
+        type: Schema.Types.ObjectId,
+        ref: "User"
+    }
 })
 
 

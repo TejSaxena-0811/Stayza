@@ -4,6 +4,7 @@ const wrapAsync = require("../utils/wrapAsync.js");
 const ExpressError = require("../utils/ExpressError.js");
 const { listingSchema } = require("../schema.js");
 const Listing = require("../models/listing.js");
+const {isLoggedIn} = require("../middleware.js");
 
 
 
@@ -30,12 +31,13 @@ router.get("/" , async (req , res) => {
 
 
 // CREATE ROUTE
-router.get("/new" , (req , res) => {
+router.get("/new" , isLoggedIn ,  (req , res) => {
     res.render("listings/new.ejs");
 })
 
-router.post("/" , validateListing , wrapAsync(async (req , res) => {
+router.post("/" , isLoggedIn ,  validateListing , wrapAsync(async (req , res) => {
     const newListing = new Listing(req.body.listing);
+    newListing.owner = req.user._id;
     await newListing.save();
     req.flash("success" , "New listing created"); // key: success , message: new listing created
     res.redirect("/listings");
@@ -45,7 +47,7 @@ router.post("/" , validateListing , wrapAsync(async (req , res) => {
 
 
 // EDIT ROUTE
-router.get("/:id/edit" , wrapAsync(async(req , res) => {
+router.get("/:id/edit" , isLoggedIn , wrapAsync(async(req , res) => {
     let {id} = req.params;
     const listing = await Listing.findById(id);
     if(!listing){
@@ -55,7 +57,7 @@ router.get("/:id/edit" , wrapAsync(async(req , res) => {
     res.render("listings/edit.ejs" , {listing});
 }))
 
-router.put("/:id" , validateListing , wrapAsync(async(req , res) => {
+router.put("/:id" , isLoggedIn ,  validateListing , wrapAsync(async(req , res) => {
     let {id} = req.params;
     await Listing.findByIdAndUpdate(
         id,
@@ -71,7 +73,7 @@ router.put("/:id" , validateListing , wrapAsync(async(req , res) => {
 
 
 // DELETE ROUTE
-router.delete("/:id" , wrapAsync(async(req , res) => {
+router.delete("/:id" , isLoggedIn ,  wrapAsync(async(req , res) => {
     let {id} = req.params;
     await Listing.findByIdAndDelete({_id: `${id}`});
     req.flash("success" , "Listing deleted");
@@ -82,7 +84,7 @@ router.delete("/:id" , wrapAsync(async(req , res) => {
 // SHOW ROUTE
 router.get("/:id" , wrapAsync(async(req , res) => {
     let {id} = req.params;
-    const listing = await Listing.findById(id).populate("reviews");
+    const listing = await Listing.findById(id).populate("reviews").populate("owner");
     if(!listing){
         req.flash("error" , "The listing you requested for does not exist");
         return res.redirect("/listings"); // using return here so that the next lines after this dont execute
