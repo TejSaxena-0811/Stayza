@@ -13,6 +13,10 @@ const reviewSchema = new Schema({
     createdAt: {
         type: Date,
         default: Date.now()
+    },
+    author: {
+        type: Schema.Types.ObjectId,
+        ref: "User" // because a review will only exist if a user is there.
     }
 })
 

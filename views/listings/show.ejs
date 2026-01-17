@@ -18,45 +18,54 @@
 
             <p class="card-text pb-4"><%= listing.country %></p>
 
-            <div class="btns">
-                <a href="/listings/<%= listing.id %>/edit"><button class="btn edit-btn">Edit</button></a>
-                <br><br>
-                <form method="post" action="/listings/<%= listing.id %>?_method=DELETE">
-                    <button class="btn btn-dark offset-4">Delete</button>
-                </form>
-            </div>
+            <% if(currUser && listing.owner._id.equals(currUser._id)){ %>
+                <div class="btns">
+                    <a href="/listings/<%= listing.id %>/edit"><button class="btn edit-btn">Edit</button></a>
+                    <br><br>
+                    <form method="post" action="/listings/<%= listing.id %>?_method=DELETE">
+                        <button class="btn btn-dark offset-4">Delete</button>
+                    </form>
+                </div>
+            <% } %>
         </div>
 
         <div>
-            <hr>
-            <h4>Leave a Review</h4>
-            <form method="post" action="/listings/<%= listing.id %>/reviews" novalidate class="needs-validation">
-                <div>
-                    <label for="rating" class="form-label">Rating</label>
-                    <input type="range" min="1" max="5" id="rating" name="review[rating]" class="form-range">
-                </div>
-                <div>
-                    <label for="comment" class="form-label">Comment</label>
+            <!-- user can only make a review if they are logged in -->
+            <% if(currUser){ %>
+                <hr>
+                <h4>Leave a Review</h4>
+                <form method="post" action="/listings/<%= listing.id %>/reviews" novalidate class="needs-validation">
+                    <div>
+                        <label for="rating" class="form-label">Rating</label>
+                        <input type="range" min="1" max="5" id="rating" name="review[rating]" class="form-range">
+                    </div>
+                    <div>
+                        <label for="comment" class="form-label">Comment</label>
+                        <br>
+                        <textarea name="review[comment]" id="comment" cols="35" rows="5" class="form-control" required></textarea>
+                        <div class="invalid-feedback">Please add some comments</div>
+                    </div>
                     <br>
-                    <textarea name="review[comment]" id="comment" cols="35" rows="5" class="form-control" required></textarea>
-                    <div class="invalid-feedback">Please add some comments</div>
-                </div>
-                <br>
-                <button class="btn btn-outline-dark">Submit</button>
-            </form>
+                    <button class="btn btn-outline-dark">Submit</button>
+                </form>
+            <% } %>
             <hr>
             <h4>All reviews</h4>
             <div class="row">
                 <% for(let review of listing.reviews){ %>
                     <div class="card col-5 ms-3 mb-3">
                         <div class="card-body">
-                            <h5 class="card-title">john doe</h5>
+                            <h5 class="card-title">@<%= review.author.username %></h5>
                             <p class="card-text"><%= review.comment %></p>
                             <p class="card-text"><%= review.rating %></p>
                         </div>
-                        <form method="post" action="/listings/<%= listing.id %>/reviews/<%= review._id %>?_method=DELETE" class="mb-3">
-                            <button class="btn btn-sm btn-dark">Delete</button>
-                        </form>
+
+                        <!-- only show the delete button for a review if the currently logged-in user is the person who wrote that review. -->
+                        <% if(currUser && review.author._id.equals(currUser._id)){ %>
+                            <form method="post" action="/listings/<%= listing.id %>/reviews/<%= review._id %>?_method=DELETE" class="mb-3">
+                                <button class="btn btn-sm btn-dark">Delete</button>
+                            </form>
+                        <% } %>
                     </div>
                 <% } %>
             </div>

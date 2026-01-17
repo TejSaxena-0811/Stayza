@@ -4,21 +4,10 @@ const wrapAsync = require("../utils/wrapAsync.js");
 const ExpressError = require("../utils/ExpressError.js");
 const { listingSchema } = require("../schema.js");
 const Listing = require("../models/listing.js");
-const {isLoggedIn} = require("../middleware.js");
+const {isLoggedIn , isOwner , validateListing} = require("../middleware.js");
 
 
 
-// making the joi validations as a middleware function (for validating new listings)
-const validateListing = (req , res , next) => {
-    let {error} = listingSchema.validate(req.body);
-    if(error){
-        let errMsg = error.details.map((el) => el.message).join(",");
-        throw new ExpressError(400 , errMsg);
-    }
-    else{
-        next();
-    }
-}
 
 
 
@@ -47,7 +36,7 @@ router.post("/" , isLoggedIn ,  validateListing , wrapAsync(async (req , res) =>
 
 
 // EDIT ROUTE
-router.get("/:id/edit" , isLoggedIn , wrapAsync(async(req , res) => {
+router.get("/:id/edit" , isLoggedIn , isOwner , wrapAsync(async(req , res) => {
     let {id} = req.params;
     const listing = await Listing.findById(id);
     if(!listing){
@@ -57,7 +46,7 @@ router.get("/:id/edit" , isLoggedIn , wrapAsync(async(req , res) => {
     res.render("listings/edit.ejs" , {listing});
 }))
 
-router.put("/:id" , isLoggedIn ,  validateListing , wrapAsync(async(req , res) => {
+router.put("/:id" , isLoggedIn , isOwner , validateListing , wrapAsync(async(req , res) => {
     let {id} = req.params;
     await Listing.findByIdAndUpdate(
         id,
@@ -73,7 +62,7 @@ router.put("/:id" , isLoggedIn ,  validateListing , wrapAsync(async(req , res) =
 
 
 // DELETE ROUTE
-router.delete("/:id" , isLoggedIn ,  wrapAsync(async(req , res) => {
+router.delete("/:id" , isLoggedIn , isOwner , wrapAsync(async(req , res) => {
     let {id} = req.params;
     await Listing.findByIdAndDelete({_id: `${id}`});
     req.flash("success" , "Listing deleted");
@@ -84,7 +73,7 @@ router.delete("/:id" , isLoggedIn ,  wrapAsync(async(req , res) => {
 // SHOW ROUTE
 router.get("/:id" , wrapAsync(async(req , res) => {
     let {id} = req.params;
-    const listing = await Listing.findById(id).populate("reviews").populate("owner");
+    const listing = await Listing.findById(id).populate({path: "reviews" , populate: {path: "author"}}).populate("owner"); // using nested populate here
     if(!listing){
         req.flash("error" , "The listing you requested for does not exist");
         return res.redirect("/listings"); // using return here so that the next lines after this dont execute
