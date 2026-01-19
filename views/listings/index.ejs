@@ -1,22 +1,91 @@
 <% layout('/layouts/boilerplate') -%>
-<body>
-    <h1>All Listings</h1>
 
-    <div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1">
-        <% for(let listing of allListings){ %>
-            <a href="/listings/<%= listing._id %>" class="listing-link">
-                <div class="card listing-card col">
-                    <img src="<%= listing.image %>" class="card-img-top" alt="listing image" style="height: 20rem">
-                    <div class="card-img-overlay"></div>
-                    <div class="card-body">
-                        <p class="card-text">
-                            <b><%= listing.title %></b>
-                            <br>
-                            &#8377;<%= listing.price.toLocaleString("en-IN") %>/night
-                        </p>
-                    </div>
+<div id="filters">
+    <a href="/listings/category/trending" class="filter-link">
+        <div class="filter">
+            <div><i class="fa-solid fa-fire"></i></div>
+            <p>Trending</p>
+        </div>
+    </a>
+
+    <a href="/listings/category/rooms" class="filter-link">
+        <div class="filter">
+            <div><i class="fa-solid fa-bed"></i></div>
+            <p>Rooms</p>
+        </div>
+    </a>
+
+    <a href="/listings/category/altitude" class="filter-link">
+        <div class="filter">
+            <div><i class="fa-solid fa-volcano"></i></div>
+            <p>Altitude</p>
+        </div>
+    </a>
+
+    <a href="/listings/category/castles" class="filter-link">
+        <div class="filter">
+            <div><i class="fa-brands fa-fort-awesome"></i></div>
+            <p>Castles</p>
+        </div>
+    </a>
+
+    <a href="/listings/category/pools" class="filter-link">
+        <div class="filter">
+            <div><i class="fa-solid fa-person-swimming"></i></div>
+            <p>Pools</p>
+        </div>
+    </a>
+
+    <a href="/listings/category/camping" class="filter-link">
+        <div class="filter">
+            <div><i class="fa-solid fa-campground"></i></div>
+            <p>Camping</p>
+        </div>
+    </a>
+
+    <a href="/listings/category/farms" class="filter-link">
+        <div class="filter">
+            <div><i class="fa-solid fa-cow"></i></div>
+            <p>Farms</p>
+        </div>
+    </a>
+
+    <a href="/listings/category/arctic" class="filter-link">
+        <div class="filter">
+            <div><i class="fa-solid fa-snowman"></i></div>
+            <p>Arctic</p>
+        </div>
+    </a>
+
+    <a href="/listings/category/beach" class="filter-link">
+        <div class="filter">
+            <div><i class="fa-solid fa-umbrella-beach"></i></div>
+            <p>Beach</p>
+        </div>
+    </a>
+
+    <a href="/listings/category/boats" class="filter-link">
+        <div class="filter">
+            <div><i class="fa-solid fa-sailboat"></i></div>
+            <p>Boats</p>
+        </div>
+    </a>
+</div>
+
+<div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1 mt-3">
+    <% for(let listing of allListings){ %>
+        <a href="/listings/<%= listing._id %>" class="listing-link">
+            <div class="card listing-card col">
+                <img src="<%= listing.image.url %>" class="card-img-top" alt="listing image" style="height: 20rem">
+                <div class="card-img-overlay"></div>
+                <div class="card-body">
+                    <p class="card-text">
+                        <b><%= listing.title %></b>
+                        <br>
+                        &#8377;<%= listing.price.toLocaleString("en-IN") %>/night
+                    </p>
                 </div>
-            </a>
-        <% } %>
-    </div>
-</body>
+            </div>
+        </a>
+    <% } %>
+</div>
