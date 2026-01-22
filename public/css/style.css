@@ -36,7 +36,7 @@ body{
     text-decoration: underline;
 }
 
-.f-info-links , .f-info-socials , .f-info-brand{
+.f-info-socials , .f-info-brand{
     width: 100%;
     font-size: 1.2rem;
     display: flex;
@@ -194,4 +194,9 @@ body{
 
 .search-inp{
     padding: 0.5rem 3rem 0.5rem 3rem !important;
+}
+
+
+.signupLoginMsg{
+    display: inline-block;
 }
