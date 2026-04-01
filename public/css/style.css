@@ -193,7 +193,20 @@ body{
 }
 
 .search-inp{
-    padding: 0.5rem 3rem 0.5rem 3rem !important;
+    padding: 0.5rem 3rem 0.5rem 1rem !important;
+}
+
+@media (max-width: 576px) {
+    .search-inp {
+        padding: 0.5rem 1rem !important;
+        text-align: left;
+    }
+}
+
+@media (max-width: 991px) {
+    .navbar .d-flex {
+        margin-top: 40px;
+    }
 }
 
 
