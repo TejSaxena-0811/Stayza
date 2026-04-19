@@ -42,5 +42,7 @@ Stayza is a full-stack web application for discovering, listing, and reviewing t
 - Express-Session and Connect-Mongo (session storage)
 - Method-Override
 
+---
+
 ### Deployed Link
 https://stayza-omega.vercel.app/listings
