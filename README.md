@@ -3,7 +3,8 @@
 Stayza is a full-stack web application for discovering, listing, and reviewing travel accommodations. It allows users to explore listings, create their own properties, and share reviews.
 
 # A chart explaining the complete flow:
-<img width="785" height="987" alt="image" src="https://github.com/user-attachments/assets/7eedf6a8-c7b8-4a0e-a1ae-0248590d1439" />
+<img width="826" height="1041" alt="image" src="https://github.com/user-attachments/assets/2448a930-a93a-4f17-ad76-9bddd8d7fab3" />
+
 
 
 ---
